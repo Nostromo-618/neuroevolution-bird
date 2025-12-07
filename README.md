@@ -4,8 +4,6 @@ An educational project demonstrating how a **Neural Network** combined with a **
 
 Built with pure **JavaScript**, **HTML**, and **CSS**. No external libraries or frameworks.
 
-![Screenshot](https://via.placeholder.com/800x600?text=NeuroEvolution+Bird)
-
 ## 🧠 How it Works
 
 ### The Brain (Neural Network)
