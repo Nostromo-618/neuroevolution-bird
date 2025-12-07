@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroEvolution Bird</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="bg-slate-900 text-slate-100 overflow-hidden">
+  <div class="min-h-screen bg-slate-900 text-slate-100 font-sans p-4 md:p-8 flex flex-col items-center">
+
+    <!-- Header -->
+    <header class="w-full max-w-6xl mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h1
+          class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          NeuroEvolution Bird v1.0
+        </h1>
+        <p class="text-slate-400 text-sm">Genetic Algorithm plays Flappy Bird</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="btn-info"
+          class="px-4 py-2 rounded font-bold text-sm transition bg-cyan-500 hover:bg-cyan-400 text-white">HOW IT
+          WORKS</button>
+        <button id="btn-start"
+          class="px-4 py-2 rounded font-bold text-sm transition bg-green-600 hover:bg-green-500 text-white">START
+          SIMULATION</button>
+        <button id="btn-pause"
+          class="px-4 py-2 rounded font-bold text-sm transition bg-yellow-600 hover:bg-yellow-500 hidden">PAUSE</button>
+        <button id="btn-reset"
+          class="px-4 py-2 rounded bg-red-600 hover:bg-red-500 font-bold text-sm transition">RESET</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- Left Column - Game Canvas -->
+      <div class="lg:col-span-2 flex flex-col items-center">
+        <div id="game-canvas-container"></div>
+
+        <!-- Speed Controls -->
+        <div
+          class="mt-6 w-full max-w-[800px] bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="flex items-center gap-4">
+            <span class="text-slate-400 font-bold">SIMULATION SPEED</span>
+            <button id="btn-headless"
+              class="px-4 py-2 rounded font-bold text-sm transition bg-slate-700 text-slate-300 hover:bg-slate-600">HEADLESS
+              OFF</button>
+          </div>
+          <div id="speed-buttons" class="flex flex-wrap gap-2 justify-center"></div>
+        </div>
+
+        <!-- Challenge Mode Controls -->
+        <div
+          class="mt-4 w-full max-w-[800px] bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="flex items-center gap-4">
+            <span class="text-slate-400 font-bold">CHALLENGE MODE</span>
+            <button id="btn-challenge"
+              class="px-4 py-2 rounded font-bold text-sm transition bg-slate-700 text-slate-300 hover:bg-slate-600">OFF</button>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-slate-400 font-bold text-sm">PIPE VERTICAL SPEED</span>
+            <div id="pipe-speed-buttons" class="flex gap-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Stats and Network Vis -->
+      <div class="flex flex-col gap-6">
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+            <div class="text-slate-400 text-xs font-bold uppercase">Generation</div>
+            <div class="text-3xl font-mono font-bold text-white" id="generation">1</div>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+            <div class="text-slate-400 text-xs font-bold uppercase">Alive</div>
+            <div class="text-3xl font-mono font-bold text-green-400" id="alive">50<span
+                class="text-sm text-slate-500">/50</span></div>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+            <div class="text-slate-400 text-xs font-bold uppercase">Current Score</div>
+            <div class="text-3xl font-mono font-bold text-cyan-400" id="score">0</div>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+            <div class="text-slate-400 text-xs font-bold uppercase">High Score</div>
+            <div class="text-3xl font-mono font-bold text-yellow-400" id="highScore">0</div>
+          </div>
+        </div>
+
+        <!-- Network Visualization Container -->
+        <div id="network-vis-container"></div>
+
+        <!-- Info Section -->
+        <div class="bg-slate-800-50 p-4 rounded-lg border border-slate-700 text-xs text-slate-400 leading-relaxed">
+          <h4 class="font-bold text-white mb-2">How it works</h4>
+          <p class="mb-2">
+            Each bird has a unique <strong>Neural Network</strong> brain. It takes 4 inputs: Bird Y, Velocity, Pipe
+            Distance, and Pipe Gap Height.
+          </p>
+          <p>
+            Birds that travel further have higher <strong>fitness</strong>. The best birds from each generation are
+            selected to breed (copy + mutate) the next generation.
+          </p>
+          <p class="mt-2 text-cyan-400 font-bold">
+            Watch the neural connections light up as the bird "decides" to jump!
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Info Modal -->
+  <div id="info-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
+    <div class="bg-slate-800 rounded-xl w-[60%] max-w-[60%] border border-slate-700 shadow-2xl relative">
+      <div class="p-6 md:p-8 space-y-6">
+        <h2 class="text-2xl font-bold text-white">How This AI Works</h2>
+
+        <div class="space-y-4 text-slate-300 leading-relaxed">
+          <section>
+            <h3 class="text-xl font-bold text-cyan-400 mb-2">1. The Neural Network (The Brain)</h3>
+            <p class="mb-2">Each bird has its own unique "brain" - a simple neural network. It makes decisions based on
+              4 inputs:</p>
+            <ul class="list-disc list-inside space-y-1 text-sm bg-slate-900-50 p-4 rounded-lg border border-slate-700">
+              <li><span class="text-yellow-400 font-bold">Bird Y Position</span>: Vertical position on screen.</li>
+              <li><span class="text-yellow-400 font-bold">Pipe Distance</span>: Horizontal distance to the next pipe.
+              </li>
+              <li><span class="text-yellow-400 font-bold">Pipe Gap Height</span>: Vertical position of the safe gap.
+              </li>
+              <li><span class="text-yellow-400 font-bold">Velocity</span>: Current vertical speed of the bird.</li>
+            </ul>
+            <p class="mt-2 text-sm">
+              These inputs flow through a <strong>Hidden Layer</strong> (where the "thinking" happens) and result in a
+              single <strong>Output</strong>.
+              If the output is > 0.5, the bird jumps!
+            </p>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-green-400 mb-2">2. Genetic Algorithm (Evolution)</h3>
+            <p>At the start, 50 birds are spawned with completely random brains. Most will fail immediately. This is
+              "Generation 1".</p>
+            <p class="mt-2">When all birds die, the next generation is created using <strong>Darwinian
+                Evolution</strong>:</p>
+            <ul
+              class="list-disc list-inside space-y-1 mt-2 text-sm bg-slate-900-50 p-4 rounded-lg border border-slate-700">
+              <li><span class="text-green-400 font-bold">Selection</span>: Birds that flew further (higher fitness) are
+                more likely to be picked as parents.</li>
+              <li><span class="text-green-400 font-bold">Crossover</span>: (Simplified here) We copy the best bird's
+                brain.</li>
+              <li><span class="text-green-400 font-bold">Mutation</span>: We slightly tweak the neural connections
+                (weights) of the offspring. This introduces new behaviors.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-purple-400 mb-2">3. The Result</h3>
+            <p>
+              Over many generations, the birds "learn" to play. They don't know what a pipe is or what gravity is—they
+              just evolve the math that happens to keep them alive the longest.
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/index.js"></script>
+</body>
+
+</html>
