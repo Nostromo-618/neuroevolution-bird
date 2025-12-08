@@ -601,14 +601,17 @@ button:focus-visible {
 }
 
 /* ========================================
+   GLOBAL: Allow scrolling when content overflows
+   ======================================== */
+body.overflow-hidden {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ========================================
    MOBILE RESPONSIVENESS (< 768px)
    ======================================== */
 @media (max-width: 768px) {
-  /* --- BODY: Allow scrolling on mobile --- */
-  body.overflow-hidden {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
 
   /* --- HEADER: Hide title, center buttons --- */
   .header-title {
