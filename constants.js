@@ -127,7 +127,7 @@ export const MUTATION_AMOUNT = 0.1; // Max amount to change a weight by
  * 1. Bird Y position (normalized 0-1)
  * 2. Horizontal distance to next pipe (normalized 0-1)
  * 3. Vertical position of pipe gap center (normalized 0-1)
- * 4. Bird velocity (normalized -1 to 1)
+ * 4. Bird velocity (normalized 0 to 1)
  *
  * These 4 inputs provide the complete "state" information needed for the
  * bird to make decisions. The neural network learns to map these inputs

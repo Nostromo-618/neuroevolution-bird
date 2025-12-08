@@ -44,9 +44,9 @@ INPUT LAYER (4 neurons) → HIDDEN LAYER (6 neurons) → OUTPUT LAYER (1 neuron)
    - Vertical position of safe gap center
    - 0 = top of screen, 1 = bottom of screen
 
-4. **Bird Velocity** (normalized -1 to 1)
+4. **Bird Velocity** (normalized 0-1)
    - Current vertical velocity
-   - -1 = maximum upward speed, 1 = maximum downward speed
+   - 0 = maximum upward speed, 1 = maximum downward speed
 
 ### Hidden Layer (Feature Extraction)
 
@@ -141,11 +141,10 @@ if (random() < MUTATION_RATE) {
 **Implicit Fitness Calculation:**
 ```
 fitness += 1  // For each frame survived
-fitness += 10 // For each pipe passed (bonus)
 ```
 
 - Simple but effective
-- Encourages both survival and progress
+- Birds that survive longer naturally pass more pipes
 - Higher fitness = better reproduction chances
 
 ### Evolutionary Dynamics
@@ -200,7 +199,7 @@ This means our 4-6-1 network **can** learn the optimal flapping strategy.
 - **Gravity:** 0.6 pixels/frame² (downward acceleration)
 - **Lift:** -10 pixels/frame (upward impulse when flapping)
 - **Terminal Velocity:** ±10 pixels/frame (prevents infinite acceleration)
-- **Air Resistance:** 0.9 damping factor per frame
+- **Velocity Damping:** 0.9 factor per frame (simplified drag model)
 
 ### Pipe System
 

@@ -238,7 +238,7 @@ export class GameEngine {
 
       // Apply physics
       item.entity.velocity += GRAVITY; // Accelerate downward
-      item.entity.velocity *= 0.9; // Air resistance (damping)
+      item.entity.velocity *= 0.9; // Velocity damping
       item.entity.velocity = Math.max(Math.min(item.entity.velocity, VELOCITY_LIMIT), -VELOCITY_LIMIT); // Clamp
       item.entity.y += item.entity.velocity; // Update position
 
@@ -255,7 +255,7 @@ export class GameEngine {
       // 1. Bird Y position (0 = top, 1 = bottom)
       // 2. Pipe X position (0 = left, 1 = right)
       // 3. Pipe gap center Y position (0 = top, 1 = bottom)
-      // 4. Bird velocity (-1 = max upward, 1 = max downward)
+      // 4. Bird velocity (0 = max upward, 1 = max downward)
       const neuralInputs = [
         item.entity.y / GAME_HEIGHT,
         pipeX / GAME_WIDTH,
