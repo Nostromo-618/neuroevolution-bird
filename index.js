@@ -1,3 +1,18 @@
+/**
+ * NeuroEvolution Bird - Main Application
+ *
+ * This is the entry point and main controller for the application.
+ * It coordinates all components and handles user interaction.
+ *
+ * Responsibilities:
+ * 1. Initialize all components (GameEngine, GameCanvas, NetworkVis)
+ * 2. Set up user interface and event listeners
+ * 3. Manage game state and settings
+ * 4. Control simulation speed and modes
+ * 5. Update UI with real-time statistics
+ * 6. Handle user interactions (start, pause, reset, etc.)
+ */
+
 import { GameEngine } from './services/GameEngine.js';
 import { GameCanvas } from './components/GameCanvas.js';
 import { NetworkVis } from './components/NetworkVis.js';
@@ -5,60 +20,85 @@ import {
   GAME_WIDTH, GAME_HEIGHT, POPULATION_SIZE
 } from './constants.js';
 
-// Main application
+// =============================================
+// MAIN APPLICATION CLASS
+// =============================================
+
+/**
+ * App Class - Main application controller
+ */
 class App {
+  /**
+   * Constructor - Initializes the application
+   */
   constructor() {
-    this.engine = new GameEngine();
+    // Core components
+    this.engine = new GameEngine(); // Game logic and evolution
     this.stats = {
       generation: 1,
       alive: POPULATION_SIZE,
       score: 0,
       highScore: 0
     };
-    this.bestBrain = null;
-    this.gameSpeed = 1;
-    this.paused = true;
-    this.simulationStarted = false;
-    this.challengeModeEnabled = false;
-    this.pipeVerticalSpeed = 1;
-    this.headless = false;
 
+    // UI components
+    this.bestBrain = null;
+    this.gameCanvas = null;
+    this.networkVis = null;
+
+    // Game state
+    this.gameSpeed = 1; // Simulation speed multiplier
+    this.paused = true; // Start paused
+    this.simulationStarted = false; // Not started yet
+    this.challengeModeEnabled = false; // Challenge mode off
+    this.pipeVerticalSpeed = 1; // Pipe movement speed
+    this.headless = false; // Rendering enabled
+
+    // Initialize application
     this.init();
   }
 
+  /**
+   * Initialize - Sets up the application
+   */
   init() {
-    // Initialize UI
-    this.setupUI();
-    this.setupEventListeners();
-
-    // Start game loop
-    this.startGameLoop();
-
-    // Initialize challenge mode
-    this.engine.setChallengeMode(this.challengeModeEnabled, this.pipeVerticalSpeed);
+    this.setupUI(); // Create UI elements
+    this.setupEventListeners(); // Set up event handlers
+    this.startGameLoop(); // Begin game loop
+    this.engine.setChallengeMode(this.challengeModeEnabled, this.pipeVerticalSpeed); // Initialize challenge mode
   }
 
+  // =============================================
+  // UI SETUP METHODS
+  // =============================================
+
+  /**
+   * Setup UI - Creates all user interface elements
+   */
   setupUI() {
-    // Get button references
+    // Get button references from HTML
     this.startButton = document.getElementById('btn-start');
     this.pauseButton = document.getElementById('btn-pause');
     this.modalOverlay = document.getElementById('info-modal');
 
-    // Create Game Canvas and append to container
+    // Create and add game canvas
     this.gameCanvas = new GameCanvas(this.engine);
     document.getElementById('game-canvas-container').appendChild(this.gameCanvas.element);
 
-    // Create Network Visualization and append to container
+    // Create and add network visualization
     this.networkVis = new NetworkVis();
     document.getElementById('network-vis-container').appendChild(this.networkVis.element);
 
-    // Create speed buttons
+    // Create speed control buttons
     this.createSpeedButtons();
 
-    // Create pipe speed buttons
+    // Create pipe speed control buttons
     this.createPipeSpeedButtons();
   }
 
+  /**
+   * Create Speed Buttons - Generates simulation speed controls
+   */
   createSpeedButtons() {
     const container = document.getElementById('speed-buttons');
     const speeds = [1, 2, 5, 10, 50, 100, 200, 500, 1000];
@@ -72,6 +112,9 @@ class App {
     });
   }
 
+  /**
+   * Create Pipe Speed Buttons - Generates pipe movement speed controls
+   */
   createPipeSpeedButtons() {
     const container = document.getElementById('pipe-speed-buttons');
     const pipeSpeeds = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -80,12 +123,19 @@ class App {
       const btn = document.createElement('button');
       btn.className = `w-10 h-8 rounded font-bold text-xs transition ${speed === this.pipeVerticalSpeed ? 'bg-purple-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`;
       btn.textContent = speed;
-      btn.disabled = !this.challengeModeEnabled;
+      btn.disabled = !this.challengeModeEnabled; // Disable if challenge mode off
       btn.addEventListener('click', () => this.handleVerticalSpeedChange(speed));
       container.appendChild(btn);
     });
   }
 
+  // =============================================
+  // EVENT LISTENER SETUP
+  // =============================================
+
+  /**
+   * Setup Event Listeners - Configures all user interaction handlers
+   */
   setupEventListeners() {
     // Header buttons
     document.getElementById('btn-info').addEventListener('click', () => this.toggleInfoModal());
@@ -103,6 +153,16 @@ class App {
     });
   }
 
+  // =============================================
+  // GAME LOOP
+  // =============================================
+
+  /**
+   * Start Game Loop - Begins the main game simulation loop
+   *
+   * Uses requestAnimationFrame for smooth 60 FPS updates
+   * Handles speed multiplication for faster evolution
+   */
   startGameLoop() {
     let lastTime = performance.now();
     const fpsInterval = 1000 / 60; // Target 60 FPS update logic
@@ -113,17 +173,19 @@ class App {
       if (elapsed > fpsInterval) {
         lastTime = time - (elapsed % fpsInterval);
 
+        // Only update game logic if not paused
         if (!this.paused) {
-          // Allow speeding up the game by running update multiple times per frame
+          // Run game updates multiple times for speed multiplier
           for (let i = 0; i < this.gameSpeed; i++) {
             this.engine.update();
           }
         }
 
-        // Sync UI State for HUD
+        // Update UI statistics (always, even when paused)
         const activeBird = this.engine.getBestBird();
         const aliveCount = this.engine.birds.filter(b => b.entity.alive).length;
 
+        // Update game stats
         this.stats = {
           generation: this.engine.generation,
           alive: aliveCount,
@@ -131,25 +193,34 @@ class App {
           highScore: this.engine.highScore
         };
 
-        // Update stats display
+        // Update HTML elements with current stats
         document.getElementById('generation').textContent = this.stats.generation;
         document.getElementById('alive').innerHTML = `${this.stats.alive}<span class="text-sm text-slate-500">/${POPULATION_SIZE}</span>`;
         document.getElementById('score').textContent = this.stats.score;
         document.getElementById('highScore').textContent = this.stats.highScore;
 
-        // Pass the actual brain structure for visualization
+        // Update neural network visualization if available
         if (activeBird && activeBird.entity.brain) {
           this.bestBrain = activeBird.entity.brain;
           this.networkVis.updateBrain(this.bestBrain);
         }
       }
 
+      // Continue the animation loop
       requestAnimationFrame(loop);
     };
 
+    // Start the game loop
     loop(performance.now());
   }
 
+  // =============================================
+  // UI CONTROL METHODS
+  // =============================================
+
+  /**
+   * Toggle Info Modal - Shows/hides information modal
+   */
   toggleInfoModal() {
     if (this.modalOverlay.classList.contains('hidden')) {
       this.modalOverlay.classList.remove('hidden');
@@ -158,16 +229,22 @@ class App {
     }
   }
 
+  /**
+   * Start Simulation - Begins the neuroevolution process
+   */
   startSimulation() {
     this.simulationStarted = true;
     this.paused = false;
 
-    // Hide start button, show pause button
+    // Update button visibility
     this.startButton.classList.add('hidden');
     this.pauseButton.classList.remove('hidden');
     this.pauseButton.textContent = 'PAUSE';
   }
 
+  /**
+   * Toggle Pause - Pauses or resumes the simulation
+   */
   togglePause() {
     if (!this.simulationStarted) return;
 
@@ -175,11 +252,14 @@ class App {
     this.pauseButton.textContent = this.paused ? 'RESUME' : 'PAUSE';
   }
 
+  /**
+   * Reset - Resets the entire simulation
+   */
   reset() {
     // Pause the game
     this.paused = true;
 
-    // Reset speed to 1x
+    // Reset speed to normal
     this.gameSpeed = 1;
     const speedButtons = document.querySelectorAll('#speed-buttons button');
     speedButtons.forEach(btn => {
@@ -202,14 +282,14 @@ class App {
       }
     }
 
-    // Create new game engine
+    // Create new game engine (resets everything)
     this.engine = new GameEngine();
     this.engine.setChallengeMode(this.challengeModeEnabled, this.pipeVerticalSpeed);
 
     // Update GameCanvas engine reference
     this.gameCanvas.engine = this.engine;
 
-    // Reset stats
+    // Reset statistics
     this.stats = {
       generation: 1,
       alive: POPULATION_SIZE,
@@ -217,26 +297,36 @@ class App {
       highScore: 0
     };
 
-    // Reset best brain
+    // Reset best brain visualization
     this.bestBrain = null;
     this.networkVis.updateBrain(null);
 
-    // Reset simulation state - show start button, hide pause button
+    // Reset simulation state
     this.simulationStarted = false;
     this.startButton.classList.remove('hidden');
     this.pauseButton.classList.add('hidden');
     this.pauseButton.textContent = 'PAUSE';
 
-    // Update UI
+    // Update UI display
     document.getElementById('generation').textContent = this.stats.generation;
     document.getElementById('alive').innerHTML = `${this.stats.alive}<span class="text-sm text-slate-500">/${POPULATION_SIZE}</span>`;
     document.getElementById('score').textContent = this.stats.score;
     document.getElementById('highScore').textContent = this.stats.highScore;
   }
 
+  // =============================================
+  // SPEED CONTROL METHODS
+  // =============================================
+
+  /**
+   * Handle Speed Change - Updates simulation speed
+   *
+   * @param {number} speed - New speed multiplier
+   */
   handleSpeedChange(speed) {
     this.gameSpeed = speed;
-    // Update button styles
+
+    // Update button styles to show active speed
     const speedButtons = document.querySelectorAll('#speed-buttons button');
     speedButtons.forEach(btn => {
       const btnSpeed = parseInt(btn.textContent);
@@ -244,6 +334,16 @@ class App {
     });
   }
 
+  // =============================================
+  // MODE TOGGLE METHODS
+  // =============================================
+
+  /**
+   * Toggle Headless Mode - Enables/disables rendering
+   *
+   * Headless mode improves performance by disabling visual rendering
+   * while still running the evolution simulation.
+   */
   toggleHeadless() {
     this.headless = !this.headless;
     const headlessButton = document.getElementById('btn-headless');
@@ -269,6 +369,9 @@ class App {
     }
   }
 
+  /**
+   * Toggle Challenge Mode - Enables/disables dynamic pipes
+   */
   toggleChallengeMode() {
     const newValue = !this.challengeModeEnabled;
     this.challengeModeEnabled = newValue;
@@ -292,6 +395,11 @@ class App {
     });
   }
 
+  /**
+   * Handle Vertical Speed Change - Updates pipe movement speed
+   *
+   * @param {number} speed - New vertical movement speed
+   */
   handleVerticalSpeedChange(speed) {
     if (!this.challengeModeEnabled) return;
 
@@ -307,7 +415,53 @@ class App {
   }
 }
 
-// Initialize the app when DOM is loaded
+// =============================================
+// APPLICATION INITIALIZATION
+// =============================================
+
+/**
+ * Initialize the application when DOM is loaded
+ */
 document.addEventListener('DOMContentLoaded', () => {
-  new App();
+  new App(); // Create and start the application
 });
+
+// =============================================
+// APPLICATION ARCHITECTURE
+// =============================================
+
+/**
+ * APPLICATION STRUCTURE
+ *
+ * 1. COMPONENT-BASED DESIGN
+ * - GameEngine: Core simulation and evolution logic
+ * - GameCanvas: Visual rendering of game world
+ * - NetworkVis: Neural network visualization
+ * - App: Main controller and UI manager
+ *
+ * 2. EVENT-DRIVEN ARCHITECTURE
+ * - User interactions trigger state changes
+ * - Game loop runs continuously at 60 FPS
+ * - Speed multiplier allows faster evolution
+ *
+ * 3. STATE MANAGEMENT
+ * - Game state stored in GameEngine
+ * - UI state managed by App class
+ * - Visual state handled by rendering components
+ *
+ * 4. PERFORMANCE OPTIMIZATIONS
+ * - Headless mode for faster training
+ * - Speed multipliers (up to 1000x)
+ * - Efficient canvas rendering
+ * - Minimal DOM manipulation
+ *
+ * 5. USER EXPERIENCE
+ * - Intuitive controls and visual feedback
+ * - Real-time statistics and visualization
+ * - Multiple modes (normal, challenge, headless)
+ * - Responsive design
+ *
+ * This architecture creates an educational, interactive
+ * demonstration of neuroevolution that's both performant
+ * and easy to understand.
+ */

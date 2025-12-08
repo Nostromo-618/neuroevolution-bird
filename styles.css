@@ -1,3 +1,17 @@
+/**
+ * NeuroEvolution Bird - CSS Styles
+ *
+ * This file contains all the styling for the application.
+ * It implements a Tailwind-like utility class system for
+ * consistent, maintainable styling.
+ *
+ * Design Principles:
+ * - Dark theme with accent colors
+ * - Responsive layout
+ * - Clean, modern aesthetic
+ * - Educational focus with clear visual hierarchy
+ */
+
 /* Global styles */
 body {
   font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -483,3 +497,32 @@ body {
     grid-column: span 2 / span 2;
   }
 }
+
+/**
+ * DESIGN SYSTEM EXPLANATION
+ *
+ * COLOR PALETTE:
+ * - Primary: Slate (dark theme base)
+ * - Accents: Cyan, Green, Yellow, Purple, Orange
+ * - Semantic: Green (success), Yellow (warning), Red (danger)
+ *
+ * TYPOGRAPHY:
+ * - Font: Ubuntu (clean, modern, open-source)
+ * - Hierarchy: 3xl (title) → xl (section) → lg → base → sm → xs
+ * - Weight: 400 (normal), 700 (bold), 800 (extra bold)
+ *
+ * LAYOUT:
+ * - Responsive grid system
+ * - Mobile-first approach
+ * - Consistent spacing (gap-2, gap-4)
+ * - Max-width containers for readability
+ *
+ * COMPONENTS:
+ * - Cards with consistent padding and borders
+ * - Interactive buttons with hover states
+ * - Modal overlay for information
+ * - Responsive controls that adapt to screen size
+ *
+ * The design creates an educational, professional interface
+ * that makes complex AI concepts accessible and engaging.
+ */
