@@ -16,14 +16,14 @@
 
     <!-- Header -->
     <header class="w-full max-w-6xl mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-      <div>
+      <div class="header-title">
         <h1
           class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-          NeuroEvolution Bird v1.0
+          NeuroEvolution Bird v1.0.1
         </h1>
         <p class="text-slate-400 text-sm">Genetic Algorithm plays Flappy Bird</p>
       </div>
-      <div class="flex gap-2">
+      <div class="header-buttons flex flex-wrap gap-2 justify-center">
         <button id="btn-info"
           class="px-4 py-2 rounded font-bold text-sm transition bg-cyan-500 hover:bg-cyan-400 text-white">HOW IT
           WORKS</button>
@@ -38,17 +38,48 @@
     </header>
 
     <!-- Main Content -->
-    <main class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <main class="w-full max-w-7xl main-container">
 
-      <!-- Left Column - Game Canvas -->
-      <div class="lg:col-span-2 flex flex-col items-center">
+      <!-- Stats Grid -->
+      <section class="section-stats">
+        <div class="stats-grid grid grid-cols-2 gap-4">
+          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 stat-card">
+            <div class="text-slate-400 text-xs font-bold uppercase">Generation</div>
+            <div class="text-3xl font-mono font-bold text-white stat-value" id="generation">1</div>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 stat-card">
+            <div class="text-slate-400 text-xs font-bold uppercase">Alive</div>
+            <div class="text-3xl font-mono font-bold text-green-400 stat-value" id="alive">50<span
+                class="text-sm text-slate-500">/50</span></div>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 stat-card">
+            <div class="text-slate-400 text-xs font-bold uppercase">Current Score</div>
+            <div class="text-3xl font-mono font-bold text-cyan-400 stat-value" id="score">0</div>
+          </div>
+          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 stat-card">
+            <div class="text-slate-400 text-xs font-bold uppercase">High Score</div>
+            <div class="text-3xl font-mono font-bold text-yellow-400 stat-value" id="highScore">0</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Game Canvas -->
+      <section class="section-canvas flex flex-col items-center">
         <div id="game-canvas-container"></div>
+      </section>
 
+      <!-- Network Visualization -->
+      <section class="section-network">
+        <div id="network-vis-container"></div>
+      </section>
+
+      <!-- Controls -->
+      <section class="section-controls flex flex-col items-center gap-4">
         <!-- Speed Controls -->
         <div
-          class="mt-6 w-full max-w-[800px] bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div class="flex items-center gap-4">
-            <span class="text-slate-400 font-bold">SIMULATION SPEED</span>
+          class="control-panel w-full max-w-[800px] bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="control-row flex items-center gap-4">
+            <span class="text-slate-400 font-bold control-label">SIMULATION SPEED</span>
             <button id="btn-headless"
               class="px-4 py-2 rounded font-bold text-sm transition bg-slate-700 text-slate-300 hover:bg-slate-600">HEADLESS
               OFF</button>
@@ -58,62 +89,19 @@
 
         <!-- Challenge Mode Controls -->
         <div
-          class="mt-4 w-full max-w-[800px] bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div class="flex items-center gap-4">
-            <span class="text-slate-400 font-bold">CHALLENGE MODE</span>
+          class="control-panel w-full max-w-[800px] bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="control-row flex items-center gap-4">
+            <span class="text-slate-400 font-bold control-label">CHALLENGE MODE</span>
             <button id="btn-challenge"
               class="px-4 py-2 rounded font-bold text-sm transition bg-slate-700 text-slate-300 hover:bg-slate-600">OFF</button>
           </div>
-          <div class="flex items-center gap-4">
-            <span class="text-slate-400 font-bold text-sm">PIPE VERTICAL SPEED</span>
-            <div id="pipe-speed-buttons" class="flex gap-2"></div>
+          <div class="control-row flex items-center gap-4">
+            <span class="text-slate-400 font-bold text-sm control-label">PIPE VERTICAL SPEED</span>
+            <div id="pipe-speed-buttons" class="flex flex-wrap gap-2"></div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Right Column - Stats and Network Vis -->
-      <div class="flex flex-col gap-6">
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
-            <div class="text-slate-400 text-xs font-bold uppercase">Generation</div>
-            <div class="text-3xl font-mono font-bold text-white" id="generation">1</div>
-          </div>
-          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
-            <div class="text-slate-400 text-xs font-bold uppercase">Alive</div>
-            <div class="text-3xl font-mono font-bold text-green-400" id="alive">50<span
-                class="text-sm text-slate-500">/50</span></div>
-          </div>
-          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
-            <div class="text-slate-400 text-xs font-bold uppercase">Current Score</div>
-            <div class="text-3xl font-mono font-bold text-cyan-400" id="score">0</div>
-          </div>
-          <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
-            <div class="text-slate-400 text-xs font-bold uppercase">High Score</div>
-            <div class="text-3xl font-mono font-bold text-yellow-400" id="highScore">0</div>
-          </div>
-        </div>
-
-        <!-- Network Visualization Container -->
-        <div id="network-vis-container"></div>
-
-        <!-- Info Section -->
-        <div class="bg-slate-800-50 p-4 rounded-lg border border-slate-700 text-xs text-slate-400 leading-relaxed">
-          <h4 class="font-bold text-white mb-2">How it works</h4>
-          <p class="mb-2">
-            Each bird has a unique <strong>Neural Network</strong> brain. It takes 4 inputs: Bird Y, Velocity, Pipe
-            Distance, and Pipe Gap Height.
-          </p>
-          <p>
-            Birds that travel further have higher <strong>fitness</strong>. The best birds from each generation are
-            selected to breed (copy + mutate) the next generation.
-          </p>
-          <p class="mt-2 text-cyan-400 font-bold">
-            Watch the neural connections light up as the bird "decides" to jump!
-          </p>
-        </div>
-      </div>
     </main>
   </div>
 
